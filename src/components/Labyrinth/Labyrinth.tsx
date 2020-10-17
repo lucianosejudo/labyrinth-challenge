@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Confetti from 'react-confetti'
 import Cell from '../Cell'
 import Player from '../Player'
+import GameOverState from '../GameOverState'
 import './styles.scss'
 /** keep, add, change or remove types/props */
 export type Position = [/** row */ number, /** col */ number]
@@ -98,36 +99,50 @@ const Labyrinth = (props: Props) => {
     }
   }
 
+  const handleOnResetGame = () => {
+    setGameOver(false)
+    setWinnerWinnerChickenDinner(false)
+    setPosition(startingPosition)
+    setMovesAmount(0)
+  }
+
   return (
     <div className='labyrinth'>
-      <div data-testid="position-ball">{`Player at: (${playerPosition[0]}, ${playerPosition[1]})`}</div>
-      <div
-        className='labyrinth__board'
-        data-testid="cell"
-        onKeyDown={(e) => handleOnKeyDown(e)}
-        tabIndex={0}
-      >
-        {availableCells.map((row, rowNumber) =>
-          <div style={{ display: 'flex' }}>
-            {row.map((cell, columnNumber) => {
-              const cellPosition: Position = [rowNumber, columnNumber]
-              return (
-                <Cell
-                  availabled={cell === 1}
-                  cellPosition={cellPosition}
-                  isTargetCell={comparePosition(targetPosition, cellPosition)}
-                  withPlayer={comparePosition(playerPosition, cellPosition) ? <Player /> : null}
-                />
-              )})
-            }
-              
+      {!(winnerWinnerChickenDinner || gameOver) ? (
+        <>
+          <div
+            className='labyrinth__board'
+            data-testid="cell"
+            onKeyDown={(e) => handleOnKeyDown(e)}
+            tabIndex={0}
+          >
+            {availableCells.map((row, rowNumber) =>
+              <div style={{ display: 'flex' }}>
+                {row.map((cell, columnNumber) => {
+                  const cellPosition: Position = [rowNumber, columnNumber]
+                  return (
+                    <Cell
+                      availabled={cell === 1}
+                      cellPosition={cellPosition}
+                      isTargetCell={comparePosition(targetPosition, cellPosition)}
+                      withPlayer={comparePosition(playerPosition, cellPosition) ? <Player /> : null}
+                    />
+                  )})
+                }
+                  
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      <div data-testid="moves-message">moves message {comparePosition(playerPosition, targetPosition) && 'GANOOOOOOOOO'}</div>
-      <div data-testid="lose-message">lose message</div>
-      <div data-testid="win-message">win message</div>
-      {winnerWinnerChickenDinner && <Confetti />}
+          <div data-testid="position-ball">{`Player at: (${playerPosition[0]}, ${playerPosition[1]})`}</div>
+          <div data-testid="moves-message">moves message {comparePosition(playerPosition, targetPosition) && 'GANOOOOOOOOO'}</div>
+          <div data-testid="lose-message">lose message</div>
+          <div data-testid="win-message">win message</div>
+        </>
+      ) : (
+        <GameOverState winner={true} onResetGame={handleOnResetGame} />
+      )}
+      
+      {winnerWinnerChickenDinner && <Confetti gravity={0.05} />}
     </div>
   );
 };
