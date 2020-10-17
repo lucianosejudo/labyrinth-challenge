@@ -1,10 +1,10 @@
 import React from "react";
 
-import { Solution } from "./components/solution";
+import { Labyrinth } from "./components/Labyrinth";
 
 function App() {
   return (
-    <Solution
+    <Labyrinth
       targetPosition={[6, 9]}
       availableCells={[
         [1, 1, 1, 1, 1, 0, 0, 1, 1, 1],

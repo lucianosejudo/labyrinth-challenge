@@ -1,0 +1,16 @@
+.cell {
+    align-items: center;
+    border: 1px solid black;
+    display: flex;
+    height: 40px;
+    justify-content: center;
+    width: 40px;
+
+    &--not-availabled {
+        background-color: grey;
+    }
+
+    &--target {
+        background-color: greenyellow;
+    }
+}
