@@ -35,7 +35,7 @@ const Labyrinth = (props: Props) => {
   const [movesAmount, setMovesAmount] = useState<number>(0)
   const [gameOver, setGameOver] = useState<boolean>(false)
 
-  const getBannedCells = () => {
+  const getBannedCells = useCallback(() => {
     const banned: number[][] = availableCells.map((row, rowNumber) => 
       row.map((bit, columnNumber) => {
         if (!bit) {
@@ -44,12 +44,12 @@ const Labyrinth = (props: Props) => {
       }).filter(el => el)
     ).flat()
     setBannedCells(banned)
-  }
+  }, [availableCells])
 
-  const getRowsColumnsAmount = () => {
+  const getRowsColumnsAmount = useCallback(() => {
     setRowAmout(availableCells.length - 1)
     setcolumnAmount(availableCells[0].length - 1)
-  }
+  }, [availableCells])
 
   useEffect(() => {
     getBannedCells()
@@ -59,19 +59,19 @@ const Labyrinth = (props: Props) => {
       setWinnerWinnerChickenDinner(true)
     if (movesAmount === moveLimit && !winner)
       setGameOver(true)
-  }, [playerPosition, movesAmount])
+  }, [playerPosition, movesAmount, getBannedCells, getRowsColumnsAmount, moveLimit, targetPosition])
 
-  const isPositionBanned = (([row , column]: Position) : boolean =>
+  const isPositionBanned = useCallback((([row , column]: Position) : boolean =>
     bannedCells?.some(([w, z]) => w === row && column === z)
     || (row < 0 || column < 0)
-    || (row > rowAmount || column > columnAmount ))
+    || (row > rowAmount || column > columnAmount )), [bannedCells, columnAmount, rowAmount])
 
-  const handleNewPosition = (newPosition: Position) => {
+  const handleNewPosition = useCallback((newPosition: Position) => {
     if (!isPositionBanned(newPosition)) {
       setPosition(newPosition)
       setMovesAmount(movesAmount + 1)
     }
-  }
+  }, [isPositionBanned, movesAmount])
 
   const handleOnKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
     event.preventDefault()
@@ -109,7 +109,7 @@ const Labyrinth = (props: Props) => {
     setWinnerWinnerChickenDinner(false)
     setPosition(startingPosition)
     setMovesAmount(0)
-  }, [])
+  }, [startingPosition])
 
   return (
     <div className='labyrinth'>

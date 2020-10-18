@@ -61,6 +61,6 @@ describe("Labyrinth", () => {
     fireEvent.keyDown(cell, { key: "ArrowRight" })
     const elem = getByTestId("reset")
     fireEvent.click(elem)
-    expect(getByTestId("position-ball").textContent).toEqual("Player at: (0, 0)")
+    expect(getByTestId("position-ball").textContent).toEqual(`Player at: (${props.startingPosition[0]}, ${props.startingPosition[1]})`)
   });
 });
