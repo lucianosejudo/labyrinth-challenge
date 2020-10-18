@@ -85,7 +85,6 @@ const Labyrinth = (props: Props) => {
     switch (event.key) {
       case 'ArrowDown':
         newPosition = [x + 1, y]
-        console.log(newPosition, playerPosition)
         handleNewPosition(newPosition)
         break;
       case 'ArrowUp':
@@ -147,7 +146,12 @@ const Labyrinth = (props: Props) => {
               <Confetti gravity={0.05} />
             </>
           }
-          <Button handleOnClick={() => handleOnResetGame()}>Reset Game</Button>
+          <Button
+            handleOnClick={() => handleOnResetGame()}
+            testId='reset'
+          >
+            Reset Game
+          </Button>
     </div>
   );
 };

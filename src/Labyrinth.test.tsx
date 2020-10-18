@@ -45,10 +45,22 @@ describe("Labyrinth", () => {
       <Labyrinth {...props} moveLimit={2} />
     );
     const elem = getByTestId("cell")
-    fireEvent.keyDown(elem, { key: "ArrowRight" });
-    fireEvent.keyDown(elem, { key: "ArrowRight" });
+    fireEvent.keyDown(elem, { key: "ArrowRight" })
+    fireEvent.keyDown(elem, { key: "ArrowRight" })
     expect(getByTestId("moves-message").textContent).toEqual("moves left 0");
-    expect(queryByTestId("win-message")).not.toBeTruthy();
-    expect(queryByTestId("lose-message")).toBeTruthy();
+    expect(queryByTestId("win-message")).not.toBeTruthy()
+    expect(queryByTestId("lose-message")).toBeTruthy()
+  });
+
+  it("should reset", () => {
+    const { container, getByTestId, queryByTestId } = render(
+      <Labyrinth {...props} moveLimit={2} />
+    );
+    const cell = getByTestId("cell")
+    fireEvent.keyDown(cell, { key: "ArrowRight" })
+    fireEvent.keyDown(cell, { key: "ArrowRight" })
+    const elem = getByTestId("reset")
+    fireEvent.click(elem)
+    expect(getByTestId("position-ball").textContent).toEqual("Player at: (0, 0)")
   });
 });
