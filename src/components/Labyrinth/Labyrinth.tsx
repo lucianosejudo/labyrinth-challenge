@@ -53,9 +53,12 @@ const Labyrinth = (props: Props) => {
   useEffect(() => {
     getBannedCells()
     getRowsColumnsAmount()
-    if (comparePosition(playerPosition, targetPosition))
+    const winner = comparePosition(playerPosition, targetPosition)
+    if (winner)
       setWinnerWinnerChickenDinner(true)
-  }, [playerPosition])
+    if (movesAmount === moveLimit && !winner)
+      setGameOver(true)
+  }, [playerPosition, movesAmount])
 
   const isPositionBanned = (([row , column]: Position) : boolean =>
     bannedCells.some(([w, z]) => w === row && column === z)
@@ -72,8 +75,8 @@ const Labyrinth = (props: Props) => {
   const handleOnKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     event.preventDefault()
 
-    if (movesAmount > moveLimit)
-      return setGameOver(true)
+    if (gameOver || winnerWinnerChickenDinner)
+      return
 
     const [x, y] = playerPosition
     let newPosition: Position;
@@ -108,20 +111,19 @@ const Labyrinth = (props: Props) => {
 
   return (
     <div className='labyrinth'>
-      {!(winnerWinnerChickenDinner || gameOver) ? (
-        <>
+          <h1 className='labyrinth__title'>Cretan Labyrinth</h1>
           <div
             className='labyrinth__board'
             data-testid="cell"
-            onKeyDown={(e) => handleOnKeyDown(e)}
-            tabIndex={0}
+            onKeyDown={(e) => handleOnKeyDown(e)} tabIndex={0}
           >
             {availableCells.map((row, rowNumber) =>
-              <div style={{ display: 'flex' }}>
+              <div style={{ display: 'flex' }} key={rowNumber}>
                 {row.map((cell, columnNumber) => {
                   const cellPosition: Position = [rowNumber, columnNumber]
                   return (
                     <Cell
+                      key={`[${rowNumber}, ${columnNumber}]`}
                       availabled={cell === 1}
                       cellPosition={cellPosition}
                       isTargetCell={comparePosition(targetPosition, cellPosition)}
@@ -134,15 +136,14 @@ const Labyrinth = (props: Props) => {
             )}
           </div>
           <div data-testid="position-ball">{`Player at: (${playerPosition[0]}, ${playerPosition[1]})`}</div>
-          <div data-testid="moves-message">moves message {comparePosition(playerPosition, targetPosition) && 'GANOOOOOOOOO'}</div>
-          <div data-testid="lose-message">lose message</div>
-          <div data-testid="win-message">win message</div>
-        </>
-      ) : (
-        <GameOverState winner={true} onResetGame={handleOnResetGame} />
-      )}
-      
-      {winnerWinnerChickenDinner && <Confetti gravity={0.05} />}
+          <div data-testid="moves-message">moves left {moveLimit - movesAmount}</div>
+          {gameOver && <div data-testid="lose-message"><GameOverState type='lose'/></div>}
+          {winnerWinnerChickenDinner && 
+            <>
+              <div data-testid="win-message"><GameOverState type='win'/></div>
+              <Confetti gravity={0.05} />
+            </>
+          }
     </div>
   );
 };

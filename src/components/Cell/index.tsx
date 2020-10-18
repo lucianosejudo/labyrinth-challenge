@@ -18,6 +18,7 @@ export default function Cell(props: Props) {
       'cell--target': isTargetCell,
     })}>
       {withPlayer}
+      {!availabled && <img src="/lava.png" alt="player" height={40}/>}
     </div>
   )
 }

@@ -11,6 +11,7 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "classnames": "^2.2.6",
+    "jest-canvas-mock": "^2.3.0",
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
     "react-confetti": "^6.0.0",

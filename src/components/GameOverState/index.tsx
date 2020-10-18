@@ -2,18 +2,16 @@ import React from 'react'
 import './styles.scss'
 
 export interface Props {
-  winner: boolean,
-  onResetGame: Function, 
+  type: 'win' | 'lose'
 }
 
 export default function GameOverState(props: Props) {
-  const { winner, onResetGame } = props
+  const { type } = props
   return (
     <div className='game-over-state'>
-      <span className='game-over-state__text'>
-        {winner ? '¡Winner, Winner Chicken Dinner!' : 'Game Over'}
+      <span className={`game-over-state__text  game-over-state__text--${type}`}>
+        {type === 'win' ? '¡Winner, Winner Chicken Dinner!' : '¡Game Over!'}
       </span>
-      <div onClick={() => onResetGame()} >Reset</div>
     </div>
 )
 }
