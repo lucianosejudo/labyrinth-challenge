@@ -5,7 +5,7 @@ import { Labyrinth } from "./components/Labyrinth";
 function App() {
   return (
     <Labyrinth
-      targetPosition={[6, 4]}
+      targetPosition={[6, 9]}
       availableCells={[
         [1, 1, 1, 1, 1, 0, 0, 1, 1, 1],
         [0, 0, 1, 0, 1, 1, 1, 1, 0, 0],
@@ -18,7 +18,7 @@ function App() {
         [0, 0, 1, 0, 1, 0, 0, 1, 1, 1],
       ]}
       startingPosition={[4, 4]}
-      moveLimit={2}
+      moveLimit={25}
       cellSize={30}
     />
   );

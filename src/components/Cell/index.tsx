@@ -15,10 +15,10 @@ export default function Cell(props: Props) {
   return (
     <div className={cn('cell', {
       'cell--not-availabled': !availabled,
-      'cell--target': isTargetCell,
     })}>
       {withPlayer}
       {!availabled && <img src="/lava.png" alt="player" height={40}/>}
+      {isTargetCell && <img src="/door.png" alt="player" height={40}/>}
     </div>
   )
 }

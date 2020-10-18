@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Confetti from 'react-confetti'
 import Cell from '../Cell'
+import Button from '../Button'
 import Player from '../Player'
 import GameOverState from '../GameOverState'
 import './styles.scss'
@@ -61,7 +62,7 @@ const Labyrinth = (props: Props) => {
   }, [playerPosition, movesAmount])
 
   const isPositionBanned = (([row , column]: Position) : boolean =>
-    bannedCells.some(([w, z]) => w === row && column === z)
+    bannedCells?.some(([w, z]) => w === row && column === z)
     || (row < 0 || column < 0)
     || (row > rowAmount || column > columnAmount ))
 
@@ -72,17 +73,19 @@ const Labyrinth = (props: Props) => {
     }
   }
 
-  const handleOnKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleOnKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
     event.preventDefault()
 
     if (gameOver || winnerWinnerChickenDinner)
       return
 
     const [x, y] = playerPosition
+    
     let newPosition: Position;
     switch (event.key) {
       case 'ArrowDown':
         newPosition = [x + 1, y]
+        console.log(newPosition, playerPosition)
         handleNewPosition(newPosition)
         break;
       case 'ArrowUp':
@@ -100,14 +103,14 @@ const Labyrinth = (props: Props) => {
       default:
         break;
     }
-  }
+  }, [playerPosition, gameOver, winnerWinnerChickenDinner, handleNewPosition])
 
-  const handleOnResetGame = () => {
+  const handleOnResetGame = useCallback(() => {
     setGameOver(false)
     setWinnerWinnerChickenDinner(false)
     setPosition(startingPosition)
     setMovesAmount(0)
-  }
+  }, [])
 
   return (
     <div className='labyrinth'>
@@ -127,7 +130,7 @@ const Labyrinth = (props: Props) => {
                       availabled={cell === 1}
                       cellPosition={cellPosition}
                       isTargetCell={comparePosition(targetPosition, cellPosition)}
-                      withPlayer={comparePosition(playerPosition, cellPosition) ? <Player /> : null}
+                      withPlayer={comparePosition(playerPosition, cellPosition) && !winnerWinnerChickenDinner ? <Player /> : null}
                     />
                   )})
                 }
@@ -144,6 +147,7 @@ const Labyrinth = (props: Props) => {
               <Confetti gravity={0.05} />
             </>
           }
+          <Button handleOnClick={() => handleOnResetGame()}>Reset Game</Button>
     </div>
   );
 };
