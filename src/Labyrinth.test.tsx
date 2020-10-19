@@ -1,8 +1,21 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
-
+import { Provider } from "react-redux";
+import { createStore } from "redux";
+import reducer from "./components/Labyrinth/labyrinthSlice";
 import { Labyrinth } from "./components/Labyrinth";
 import { Props } from "./components/Labyrinth/Labyrinth";
+
+
+const initialState ={
+  level: 0,
+  playerScore: 0,
+}
+
+function renderWithProviders(ui: React.ReactNode) {
+  const store = createStore(reducer, initialState);
+  return render(<Provider store={store}>{ui}</Provider>);
+}
 
 describe("Labyrinth", () => {
   let props: Props;
@@ -23,7 +36,7 @@ describe("Labyrinth", () => {
   });
 
   it("should win", () => {
-    const { container, getByTestId, queryByTestId } = render(
+    const { container, getByTestId, queryByTestId } = renderWithProviders(
       <Labyrinth {...props} />
     );
     const elem = getByTestId("cell")
@@ -40,8 +53,10 @@ describe("Labyrinth", () => {
     expect(queryByTestId("lose-message")).not.toBeTruthy();
   });
 
+  
+
   it("should lose", () => {
-    const { container, getByTestId, queryByTestId } = render(
+    const { container, getByTestId, queryByTestId } = renderWithProviders(
       <Labyrinth {...props} moveLimit={2} />
     );
     const elem = getByTestId("cell")
@@ -53,7 +68,7 @@ describe("Labyrinth", () => {
   });
 
   it("should reset", () => {
-    const { container, getByTestId, queryByTestId } = render(
+    const { container, getByTestId, queryByTestId } = renderWithProviders(
       <Labyrinth {...props} moveLimit={2} />
     );
     const cell = getByTestId("cell")
@@ -61,6 +76,6 @@ describe("Labyrinth", () => {
     fireEvent.keyDown(cell, { key: "ArrowRight" })
     const elem = getByTestId("reset")
     fireEvent.click(elem)
-    expect(getByTestId("position-ball").textContent).toEqual(`Player at: (${props.startingPosition[0]}, ${props.startingPosition[1]})`)
+    expect(getByTestId("position-ball").textContent).toEqual(`position (${props.startingPosition[0]}, ${props.startingPosition[1]})`)
   });
 });

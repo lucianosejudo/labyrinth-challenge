@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useSelector, useDispatch } from 'react-redux';
 import Confetti from 'react-confetti'
 import Cell from '../Cell'
 import Button from '../Button'
 import Player from '../Player'
 import GameOverState from '../GameOverState'
+import { incrementLevel, selectLevel, incrementScore, selectPlayerScore} from './labyrinthSlice'
 import './styles.scss'
-/** keep, add, change or remove types/props */
+
+
 export type Position = [/** row */ number, /** col */ number]
 
 export interface Props {
@@ -16,6 +19,7 @@ export interface Props {
   cellSize?: number
   shadow?: boolean
   visibleCells?: number
+  lastLevel?: boolean
 }
 
 const comparePosition = ([x, y]: Position, [w, z]: Position): boolean => x === w && y === z
@@ -23,10 +27,11 @@ const comparePosition = ([x, y]: Position, [w, z]: Position): boolean => x === w
 const Labyrinth = (props: Props) => {
   const {
     availableCells,
-    targetPosition,
-    startingPosition,
+    cellSize,
+    lastLevel,
     moveLimit,
-    cellSize
+    startingPosition,
+    targetPosition,
   } = props
   const [playerPosition, setPosition] = useState<Position>(startingPosition || [0, 0])
   const [bannedCells, setBannedCells] = useState<number[][]>(null)
@@ -35,6 +40,9 @@ const Labyrinth = (props: Props) => {
   const [winnerWinnerChickenDinner, setWinnerWinnerChickenDinner] = useState<boolean>(false)
   const [movesAmount, setMovesAmount] = useState<number>(0)
   const [gameOver, setGameOver] = useState<boolean>(false)
+  const currentLevel = useSelector(selectLevel)
+  const playerScore = useSelector(selectPlayerScore)
+  const dispatch = useDispatch()
 
   const getBannedCells = useCallback(() => {
     const banned: number[][] = availableCells.map((row, rowNumber) => 
@@ -55,12 +63,25 @@ const Labyrinth = (props: Props) => {
   useEffect(() => {
     getBannedCells()
     getRowsColumnsAmount()
+  }, [startingPosition])
+
+  useEffect(() => {
+    setPosition(startingPosition)
+  }, [startingPosition])
+
+  useEffect(() => {
     const winner = comparePosition(playerPosition, targetPosition)
-    if (winner)
+    if (winner) {
       setWinnerWinnerChickenDinner(true)
+    }
     if (movesAmount === moveLimit && !winner)
       setGameOver(true)
-  }, [playerPosition, movesAmount, getBannedCells, getRowsColumnsAmount, moveLimit, targetPosition])
+  }, [
+    moveLimit,
+    movesAmount,
+    playerPosition,
+    targetPosition
+  ])
 
   const isPositionBanned = useCallback((([row , column]: Position) : boolean =>
     bannedCells?.some(([w, z]) => w === row && column === z)
@@ -71,6 +92,7 @@ const Labyrinth = (props: Props) => {
     if (!isPositionBanned(newPosition)) {
       setPosition(newPosition)
       setMovesAmount(movesAmount + 1)
+      dispatch(incrementScore(1))
     }
   }, [isPositionBanned, movesAmount])
 
@@ -112,52 +134,68 @@ const Labyrinth = (props: Props) => {
     setMovesAmount(0)
   }, [startingPosition])
 
+  const handleOnNextLevel = useCallback(() => {
+    dispatch(incrementLevel())
+    setGameOver(false)
+    setWinnerWinnerChickenDinner(false)
+    setMovesAmount(0)
+  }, [])
+
   return (
     <div className='labyrinth'>
-          <h1 className='labyrinth__title'>Cretan Labyrinth</h1>
-          <div
-            className='labyrinth__board'
-            data-testid="cell"
-            onKeyDown={(e) => handleOnKeyDown(e)} tabIndex={0}
-          >
-            <div className='labyrinth__board-info'>
-              <div data-testid="position-ball">{`position (${playerPosition[0]}, ${playerPosition[1]})`}</div>
-              <div data-testid="moves-message">moves left {moveLimit - movesAmount}</div>
-              <div data-testid="moves-message">score {movesAmount}</div>
-            </div>
-            {availableCells.map((row, rowNumber) =>
-              <div style={{ display: 'flex' }} key={rowNumber}>
-                {row.map((cell, columnNumber) => {
-                  const cellPosition: Position = [rowNumber, columnNumber]
-                  return (
-                    <Cell
-                      key={`[${rowNumber}, ${columnNumber}]`}
-                      availabled={cell === 1}
-                      cellPosition={cellPosition}
-                      isTargetCell={comparePosition(targetPosition, cellPosition)}
-                      withPlayer={comparePosition(playerPosition, cellPosition)
-                        && !winnerWinnerChickenDinner ? <Player /> : null}
-                      cellSize={cellSize}
-                    />
-                  )})
-                }
-                  
-              </div>
-            )}
+      <h1 className='labyrinth__title'>Cretan Labyrinth</h1>
+      <div
+        className='labyrinth__board'
+        data-testid="cell"
+        onKeyDown={(e) => handleOnKeyDown(e)} tabIndex={0}
+      >
+        <div className='labyrinth__board-info'>
+          <div>level {currentLevel}</div>
+          <div data-testid="position-ball">position ({playerPosition[0]}, {playerPosition[1]})</div>
+          <div data-testid="moves-message">moves left {moveLimit - movesAmount}</div>
+          <div>score {playerScore}</div>
+        </div>
+        {availableCells.map((row, rowNumber) =>
+          <div style={{ display: 'flex' }} key={rowNumber}>
+            {row.map((cell, columnNumber) => {
+              const cellPosition: Position = [rowNumber, columnNumber]
+              return (
+                <Cell
+                  key={`[${rowNumber}, ${columnNumber}]`}
+                  availabled={cell === 1}
+                  cellPosition={cellPosition}
+                  isTargetCell={comparePosition(targetPosition, cellPosition)}
+                  withPlayer={comparePosition(playerPosition, cellPosition)
+                    && !winnerWinnerChickenDinner ? <Player /> : null}
+                  cellSize={cellSize}
+                />
+              )})
+            }
+              
           </div>
-          {gameOver && <div data-testid="lose-message"><GameOverState type='lose'/></div>}
-          {winnerWinnerChickenDinner && 
-            <>
-              <div data-testid="win-message"><GameOverState type='win'/></div>
-              <Confetti gravity={0.05} />
-            </>
+        )}
+      </div>
+      {gameOver && <div data-testid="lose-message"><GameOverState type='lose'/></div>}
+      <Button
+        handleOnClick={() => handleOnResetGame()}
+        testId='reset'
+        >
+        Reset Game
+      </Button>
+      {winnerWinnerChickenDinner && 
+        <>
+          <div data-testid="win-message"><GameOverState type='win'/></div>
+          <Confetti gravity={0.05} />
+          {!lastLevel &&
+            <Button
+              handleOnClick={() => handleOnNextLevel()}
+              testId='reset'
+            >
+              Next Level
+            </Button>
           }
-          <Button
-            handleOnClick={() => handleOnResetGame()}
-            testId='reset'
-          >
-            Reset Game
-          </Button>
+        </>
+      }
     </div>
   );
 };

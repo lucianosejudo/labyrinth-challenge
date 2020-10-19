@@ -17,6 +17,7 @@
     "react": "^16.13.1",
     "react-confetti": "^6.0.0",
     "react-dom": "^16.13.1",
+    "react-redux": "^7.2.1",
     "react-scripts": "3.4.1",
     "typescript": "~3.7.2"
   },
@@ -42,6 +43,7 @@
     ]
   },
   "devDependencies": {
-    "@types/classnames": "^2.2.10"
+    "@types/classnames": "^2.2.10",
+    "@types/react-redux": "^7.1.9"
   }
 }
