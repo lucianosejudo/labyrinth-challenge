@@ -89,7 +89,7 @@ const levels: Levels = [
       [1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
     ],
     startingPosition: [0, 0],
-    moveLimit: 109,
+    moveLimit: 112,
     cellSize: 40,
     lastLevel: true,
   },
