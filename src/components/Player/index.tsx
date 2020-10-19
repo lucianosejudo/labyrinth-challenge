@@ -1,10 +1,15 @@
 import React from 'react'
-
 import './styles.scss'
-export default function Player() {
+
+export interface Props {
+    playerSize?: number
+  }
+
+export default function Player(props: Props) {
+    const { playerSize } = props
     return (
         <div className='player'>
-            <img src="/minotauro.png" alt="player" height={30}/>
+            <img src="/minotauro.png" alt="player" height={playerSize || 30}/>
         </div>
     )
 }

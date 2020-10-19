@@ -25,7 +25,8 @@ const Labyrinth = (props: Props) => {
     availableCells,
     targetPosition,
     startingPosition,
-    moveLimit
+    moveLimit,
+    cellSize
   } = props
   const [playerPosition, setPosition] = useState<Position>(startingPosition || [0, 0])
   const [bannedCells, setBannedCells] = useState<number[][]>(null)
@@ -79,9 +80,9 @@ const Labyrinth = (props: Props) => {
     if (gameOver || winnerWinnerChickenDinner)
       return
 
-    const [x, y] = playerPosition
-    
+    const [x, y] = playerPosition 
     let newPosition: Position;
+
     switch (event.key) {
       case 'ArrowDown':
         newPosition = [x + 1, y]
@@ -119,6 +120,11 @@ const Labyrinth = (props: Props) => {
             data-testid="cell"
             onKeyDown={(e) => handleOnKeyDown(e)} tabIndex={0}
           >
+            <div className='labyrinth__board-info'>
+              <div data-testid="position-ball">{`position (${playerPosition[0]}, ${playerPosition[1]})`}</div>
+              <div data-testid="moves-message">moves left {moveLimit - movesAmount}</div>
+              <div data-testid="moves-message">score {movesAmount}</div>
+            </div>
             {availableCells.map((row, rowNumber) =>
               <div style={{ display: 'flex' }} key={rowNumber}>
                 {row.map((cell, columnNumber) => {
@@ -129,7 +135,9 @@ const Labyrinth = (props: Props) => {
                       availabled={cell === 1}
                       cellPosition={cellPosition}
                       isTargetCell={comparePosition(targetPosition, cellPosition)}
-                      withPlayer={comparePosition(playerPosition, cellPosition) && !winnerWinnerChickenDinner ? <Player /> : null}
+                      withPlayer={comparePosition(playerPosition, cellPosition)
+                        && !winnerWinnerChickenDinner ? <Player /> : null}
+                      cellSize={cellSize}
                     />
                   )})
                 }
@@ -137,8 +145,6 @@ const Labyrinth = (props: Props) => {
               </div>
             )}
           </div>
-          <div data-testid="position-ball">{`Player at: (${playerPosition[0]}, ${playerPosition[1]})`}</div>
-          <div data-testid="moves-message">moves left {moveLimit - movesAmount}</div>
           {gameOver && <div data-testid="lose-message"><GameOverState type='lose'/></div>}
           {winnerWinnerChickenDinner && 
             <>

@@ -9,5 +9,15 @@
         width: max-content;
         border: 1px solid black;
         border-radius: 3px;
+        margin-bottom: 10px;
+
+        &-info {
+            color: #fff;
+            font-weight: 600;
+            background-color: black;
+            display: flex;
+            padding: 2px;
+            justify-content: space-between;
+        }
     }
 }
