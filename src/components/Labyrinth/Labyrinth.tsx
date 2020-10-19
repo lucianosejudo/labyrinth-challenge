@@ -8,9 +8,7 @@ import GameOverState from '../GameOverState'
 import { incrementLevel, selectLevel, incrementScore, selectPlayerScore} from './labyrinthSlice'
 import './styles.scss'
 
-
 export type Position = [/** row */ number, /** col */ number]
-
 export interface Props {
   targetPosition: Position
   availableCells: (0 | 1)[][]
@@ -153,7 +151,7 @@ const Labyrinth = (props: Props) => {
           <div>level {currentLevel}</div>
           <div data-testid="position-ball">position ({playerPosition[0]}, {playerPosition[1]})</div>
           <div data-testid="moves-message">moves left {moveLimit - movesAmount}</div>
-          <div>score {playerScore}</div>
+          <div data-testid="score">score {playerScore}</div>
         </div>
         {availableCells.map((row, rowNumber) =>
           <div style={{ display: 'flex' }} key={rowNumber}>
@@ -171,7 +169,6 @@ const Labyrinth = (props: Props) => {
                 />
               )})
             }
-              
           </div>
         )}
       </div>
@@ -189,7 +186,7 @@ const Labyrinth = (props: Props) => {
           {!lastLevel &&
             <Button
               handleOnClick={() => handleOnNextLevel()}
-              testId='reset'
+              testId='next-level'
             >
               Next Level
             </Button>

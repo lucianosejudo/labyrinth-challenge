@@ -6,7 +6,6 @@ import reducer from "./components/Labyrinth/labyrinthSlice";
 import { Labyrinth } from "./components/Labyrinth";
 import { Props } from "./components/Labyrinth/Labyrinth";
 
-
 const initialState ={
   level: 0,
   playerScore: 0,
@@ -77,5 +76,21 @@ describe("Labyrinth", () => {
     const elem = getByTestId("reset")
     fireEvent.click(elem)
     expect(getByTestId("position-ball").textContent).toEqual(`position (${props.startingPosition[0]}, ${props.startingPosition[1]})`)
+  });
+
+  it("should next level exist after win ", () => {
+    const { container, getByTestId, queryByTestId } = renderWithProviders(
+      <Labyrinth {...props} />
+    );
+    const elem = getByTestId("cell")
+    fireEvent.keyDown(elem, { key: "ArrowRight" });
+    fireEvent.keyDown(elem, { key: "ArrowRight" });
+    fireEvent.keyDown(elem, { key: "ArrowDown" });
+    fireEvent.keyDown(elem, { key: "ArrowDown" });
+    fireEvent.keyDown(elem, { key: "ArrowDown" });
+    fireEvent.keyDown(elem, { key: "ArrowDown" });
+    fireEvent.keyDown(elem, { key: "ArrowRight" });
+    fireEvent.keyDown(elem, { key: "ArrowRight" });
+    expect(queryByTestId("next-level")).toBeTruthy();
   });
 });
