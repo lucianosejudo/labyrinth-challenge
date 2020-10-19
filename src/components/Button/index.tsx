@@ -12,7 +12,7 @@ export default function Button(props: Props) {
   const { children, handleOnClick, testId } = props
   return (
       <div className='button' onClick={() => handleOnClick()} data-testid={testId}>
-          {children}
+        {children}
       </div>
   )
 }

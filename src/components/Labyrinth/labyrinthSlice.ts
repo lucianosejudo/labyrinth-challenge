@@ -12,13 +12,18 @@ export const counterSlice = createSlice({
     },
     incrementScore: (state, action) => {
       state.playerScore += action.payload
-    }
+    },
+    resetScore: (state) => {
+      state.playerScore = 0
+    },
+
   },
 });
 
 export const {
   incrementLevel,
-  incrementScore
+  incrementScore,
+  resetScore
 } = counterSlice.actions;
 
 export const selectLevel = (state: { labyrinth: { level: number; }; }) => state.labyrinth?.level

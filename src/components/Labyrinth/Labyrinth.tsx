@@ -5,7 +5,7 @@ import Cell from '../Cell'
 import Button from '../Button'
 import Player from '../Player'
 import GameOverState from '../GameOverState'
-import { incrementLevel, selectLevel, incrementScore, selectPlayerScore} from './labyrinthSlice'
+import { incrementLevel, selectLevel, incrementScore, selectPlayerScore, resetScore } from './labyrinthSlice'
 import './styles.scss'
 
 export type Position = [/** row */ number, /** col */ number]
@@ -72,8 +72,9 @@ const Labyrinth = (props: Props) => {
     if (winner) {
       setWinnerWinnerChickenDinner(true)
     }
-    if (movesAmount === moveLimit && !winner)
+    if (movesAmount === moveLimit && !winner) {
       setGameOver(true)
+    }
   }, [
     moveLimit,
     movesAmount,
@@ -130,6 +131,7 @@ const Labyrinth = (props: Props) => {
     setWinnerWinnerChickenDinner(false)
     setPosition(startingPosition)
     setMovesAmount(0)
+    dispatch(resetScore())
   }, [startingPosition])
 
   const handleOnNextLevel = useCallback(() => {
@@ -172,7 +174,7 @@ const Labyrinth = (props: Props) => {
           </div>
         )}
       </div>
-      {gameOver && <div data-testid="lose-message"><GameOverState type='lose'/></div>}
+      {gameOver && <div data-testid="lose-message"><GameOverState finalLevel={lastLevel} score={playerScore} type='lose'/></div>}
       <Button
         handleOnClick={() => handleOnResetGame()}
         testId='reset'
@@ -181,7 +183,7 @@ const Labyrinth = (props: Props) => {
       </Button>
       {winnerWinnerChickenDinner && 
         <>
-          <div data-testid="win-message"><GameOverState type='win'/></div>
+          <div data-testid="win-message"><GameOverState finalLevel={lastLevel} score={playerScore} type='win'/></div>
           <Confetti gravity={0.05} />
           {!lastLevel &&
             <Button
